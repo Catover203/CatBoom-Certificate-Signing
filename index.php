@@ -1,8 +1,8 @@
 <?php
 if(isset($_POST['submit']) && !empty($_POST['common_name'])){
 	if(file_exists('cert/'.$_POST['cert'].'.cbcert')){
-		$CAkey = file_get_contents('key/'.$_POST['cert'].'.cbck');
-		$CAcert = file_get_contents('cert/'.$_POST['cert'].'.cbcert');
+		$CAkey = file_get_contents('publicCAkey/'.$_POST['cert'].'.cbck');
+		$CAcert = file_get_contents('publicCAcert/'.$_POST['cert'].'.cbcert');
 		$str = str_replace('----------BEGIN CATBOOM SECURITY CERTIFICATE----------','', str_replace('----------END CATBOOM SECURITY CERTIFICATE----------','',$CAcert));
 		$trust_by = base64_decode(explode('/||/',$cr->CBCRP(base64_decode($str)))[0]);
 		$trust = 'true';

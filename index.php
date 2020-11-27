@@ -1,6 +1,6 @@
 <?php
 if(isset($_POST['submit']) && !empty($_POST['common_name'])){
-	if(file_exists('cert/'.$_POST['cert'].'.cbcert')){
+	if(file_exists('publicCAcert/'.$_POST['cert'].'.cbcert')){
 		$CAkey = file_get_contents('publicCAkey/'.$_POST['cert'].'.cbck');
 		$CAcert = file_get_contents('publicCAcert/'.$_POST['cert'].'.cbcert');
 		$str = str_replace('----------BEGIN CATBOOM SECURITY CERTIFICATE----------','', str_replace('----------END CATBOOM SECURITY CERTIFICATE----------','',$CAcert));
@@ -30,18 +30,20 @@ if(isset($_POST['submit']) && !empty($_POST['common_name'])){
 	$l = $_POST['locality'];
 	$crypt = $_POST['crypt'];
 	$date = 86400*90;
-	$post = ['crypt' => $crypt, 'email' => $e, 'country' => $c, 'state' => $s, 'common_name' => $cn, 'organization' => $o, 'organizational_unit' => $ou, 'locality' => $l, 'CA_key' => $CAcert, 'CA_key' => $CAkey];
+	$post = ['crypt' => $crypt, 'email' => $e, 'country' => $c, 'state' => $s, 'common_name' => $cn, 'organization' => $o, 'organizational_unit' => $ou, 'locality' => $l, 'CA_key' => $CAcert, 'CA_key' => $CAkey, 'date' => $date];
 	if(strlen($c) <= 2){
 	$ch = curl_init();
-	curl_setopt($ch, CURLOPT_URL,"http://catboom-dns.ml/api/cert-signing/v1");
+	curl_setopt($ch, CURLOPT_URL,"https://catboom-dns.ml/api/cert-signing/v1/");
 	curl_setopt($ch, CURLOPT_POST, 1);
 	curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36");
+	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 	$server_output = curl_exec($ch);
 	curl_close ($ch);
 	$json = json_decode($server_output, true);
-	$cert = $json['cert'];
 	$key = $json['key'];
+	$cert = $json['cert'];
 	$csr = $json['csr'];
 echo '<div>
 <div id="certificate">
@@ -49,7 +51,8 @@ echo '<div>
 <tr>
 <td style="border:1px solid black">
 <h4>Certificate - '.strlen($cert).' bit | based '.strlen($CAcert).' bit certificate</h4>
-<textarea cols="135" rows="35">'.$cert.'</textarea>
+<textarea cols="135" rows="35">'.str_replace('|','
+',$cert).'</textarea>
 </td>
 </tr>
 </div>
@@ -57,14 +60,16 @@ echo '<div>
 <tr>
 <td style="border:1px solid black">
 <h4>Key - '.strlen($key).' bit | based '.strlen($CAkey).' bit key</h4>
-<textarea cols="125" rows="35">'.$key.'</textarea>
+<textarea cols="125" rows="35">'.str_replace('|','
+',$key).'</textarea>
 </td>
 </tr>
 </div>
 <tr>
 <td style="border:1px solid black">
 <h4>CSR - '.strlen($csr).' bit</h4>
-<textarea cols="125" rows="35">'.$csr.'</textarea>
+<textarea cols="125" rows="35">'.str_replace('|','
+',$csr).'</textarea>
 </table>
 </div>';
 }else{

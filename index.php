@@ -32,109 +32,85 @@ if(isset($_POST['submit']) && !empty($_POST['common_name'])){
 	$date = 86400*90;
 	$post = ['crypt' => $crypt, 'email' => $e, 'country' => $c, 'state' => $s, 'common_name' => $cn, 'organization' => $o, 'organizational_unit' => $ou, 'locality' => $l, 'CA_key' => $CAcert, 'CA_key' => $CAkey, 'date' => $date];
 	if(strlen($c) <= 2){
-	$ch = curl_init();
-	curl_setopt($ch, CURLOPT_URL,"https://catboom-dns.ml/api/cert-signing/v1/");
-	curl_setopt($ch, CURLOPT_POST, 1);
-	curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-	curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36");
-	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-	$server_output = curl_exec($ch);
-	curl_close ($ch);
-	$json = json_decode($server_output, true);
-	$key = $json['key'];
-	$cert = $json['cert'];
-	$csr = $json['csr'];
-echo '<div>
-<div id="certificate">
-<table align="center">
-<tr>
-<td style="border:1px solid black">
-<h4>Certificate - '.strlen($cert).' bit | based '.strlen($CAcert).' bit certificate</h4>
-<textarea cols="135" rows="35">'.str_replace('|','
-',$cert).'</textarea>
-</td>
-</tr>
-</div>
-<div id="key">
-<tr>
-<td style="border:1px solid black">
-<h4>Key - '.strlen($key).' bit | based '.strlen($CAkey).' bit key</h4>
-<textarea cols="125" rows="35">'.str_replace('|','
-',$key).'</textarea>
-</td>
-</tr>
-</div>
-<tr>
-<td style="border:1px solid black">
-<h4>CSR - '.strlen($csr).' bit</h4>
-<textarea cols="125" rows="35">'.str_replace('|','
-',$csr).'</textarea>
-</table>
-</div>';
-}else{
-echo '<p style="color:red;text-align:center">Country have 2 character only</p>';
-}
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL,"https://catboom-dns.ml/api/cert-signing/v1/");
+		curl_setopt($ch, CURLOPT_POST, 1);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36");
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+		$server_output = curl_exec($ch);
+		curl_close ($ch);
+		$json = json_decode($server_output, true);
+		if($json['success'] == true){
+			$color = 'green';
+		}else{
+			$color = 'red';
+		}
+		echo '<h1 style="color:'.$color.'">'.$json['msg'].'</h1>';
+	}else{
+		echo '<p style="color:red;text-align:center">Country have 2 character only</p>';
+	}
 }
 echo '<!DOCTYPE html>
 <html>
-<head>
-<title>CatBoom Certificate</title>
-</head>
-<body>
-<table align="center">
-<tr>
-<td style="border:1px solid black">
-<form method="post">
-<label for="country">Country:</label>
-<input type="text" size="2" name="country" maxlength="2">
-<br>
-<label for="state">State:</label>
-<input type="text" name="state">
-<br>
-<label for="locality">Locality:</label>
-<input type="text" name="locality">
-<br>
-<label for="organization">Organization:</label>
-<input type="text" name="organization">
-<br>
-<label for="organizational_unit">Organizational Unit:</label>
-<input type="text" name="organizational_unit">
-<br>
-<label for="email">Email:</label>
-<input type="email" name="email">
-<br>
-<label for="common_name">Common Name:</label>
-<input type="text" name="common_name">
-<br>
-<label for="cert">CA cert:</label>
-<select name="cert">
+	<head>
+		<title>CatBoom Certificate</title>
+	</head>
+	<body>
+		<table align="center">
+			<tr>
+				<td style="border:1px solid black">
+					<form method="post">
+						<label for="country">Country:</label>
+						<input type="text" size="2" name="country" maxlength="2" required>
+						<br>
+						<label for="state">State:</label>
+						<input type="text" name="state">
+						<br>
+						<label for="locality">Locality:</label>
+						<input type="text" name="locality">
+						<br>
+						<label for="organization">Organization:</label>
+						<input type="text" name="organization">
+						<br>
+						<label for="organizational_unit">Organizational Unit:</label>
+						<input type="text" name="organizational_unit">
+						<br>
+						<label for="email">Email:</label>
+						<input type="email" name="email" required>
+						<br>
+						<label for="common_name">Common Name:</label>
+						<input type="text" name="common_name" required>
+						<br>
+						<label for="cert">CA cert:</label>
+						<select name="cert">
 ';
 $hasher = hash_algos();
 $dr = scandir('cert/');
 	foreach($dr as $cd){
 		if(end(explode('.',$cd)) == 'cbcert'){
-			echo '<option value="'.explode('.',$cd)[0].'">'.explode('.',$cd)[0].'</option>
+			echo '							<option value="'.explode('.',$cd)[0].'">'.explode('.',$cd)[0].'</option>
 ';
 		}
 	}
-echo '</select>
-<br>
-<label for="crypt">Key Crypto:</label>
-<select name="crypt">
+echo '						</select>
+						<br>
+						<label for="crypt">Key Crypto:</label>
+						<select name="crypt">
 ';
 foreach($hasher as $hlist){
-    echo '<option value="'.$hlist.'">'.$hlist.'</option>';
+    echo '							<option value="'.$hlist.'">'.$hlist.'</option>
+';
 }
-echo '
-</select>
-<br>
-<input type="submit" name="submit" value="Create">
-</form">
-<p>If you have key and csr and want to resign, click <a href="csr.php">here</a>.</p>
-</td>
-</tr>
-</table>
-</body>
+echo '						</select>
+						<br>
+						<input type="submit" name="submit" value="Create">
+					</form">
+					<p>If you have key and csr and want to resign, click <a href="csr.php">here</a>.</p>
+				</td>
+			</tr>
+		</table>
+	</body>
 </html>';
 ?>

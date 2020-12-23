@@ -96,15 +96,6 @@ $dr = scandir('cert/');
 	}
 echo '						</select>
 						<br>
-						<label for="crypt">Key Crypto:</label>
-						<select name="crypt">
-';
-foreach($hasher as $hlist){
-    echo '							<option value="'.$hlist.'">'.$hlist.'</option>
-';
-}
-echo '						</select>
-						<br>
 						<input type="submit" name="submit" value="Create">
 					</form">
 					<p>If you have key and csr and want to resign, click <a href="csr.php">here</a>.</p>

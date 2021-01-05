@@ -3,12 +3,6 @@ if(isset($_POST['submit']) && !empty($_POST['common_name'])){
 	if(file_exists('publicCAcert/'.$_POST['cert'].'.cbcert')){
 		$CAkey = file_get_contents('publicCAkey/'.$_POST['cert'].'.cbck');
 		$CAcert = file_get_contents('publicCAcert/'.$_POST['cert'].'.cbcert');
-		$str = str_replace('----------BEGIN CATBOOM SECURITY CERTIFICATE----------','', str_replace('----------END CATBOOM SECURITY CERTIFICATE----------','',$CAcert));
-		$trust_by = base64_decode(explode('/||/',$cr->CBCRP(base64_decode($str)))[0]);
-		$trust = 'true';
-	}else{
-		$trust = 'false';
-		$trust_by = 'CatBoom Unknown CA Certificate';
 	}
 	function kcrypt($name, $data){
 	    if(hash($name, $data) && $name != 'md5' or $name != 'base64' or $name != 'sha1'){
@@ -86,7 +80,6 @@ echo '<!DOCTYPE html>
 						<label for="cert">CA cert:</label>
 						<select name="cert">
 ';
-$hasher = hash_algos();
 $dr = scandir('cert/');
 	foreach($dr as $cd){
 		if(end(explode('.',$cd)) == 'cbcert'){
@@ -95,6 +88,15 @@ $dr = scandir('cert/');
 		}
 	}
 echo '						</select>
+						<select name="length">
+							<option value="auto">Auto</option>
+							<option value="512">512</option>
+							<option value="1024">1024</option>
+							<option value="2048">2048</option>
+							<option value="4056">4056</option>
+							<option value="8112">8112</option>
+							<option value="16224">16224</option>
+						</select>
 						<br>
 						<input type="submit" name="submit" value="Create">
 					</form">

@@ -14,7 +14,18 @@ if(isset($_POST['submit']) && !empty($_POST['common_name'])){
 	$crypt = $_POST['crypt'];
 	$length = $_POST['length'];
 	$date = 86400*90;
-	$post = ['crypt' => $crypt, 'email' => $e, 'country' => $c, 'state' => $s, 'common_name' => $cn, 'organization' => $o, 'organizational_unit' => $ou, 'locality' => $l, 'CA_key' => $CAcert, 'CA_key' => $CAkey, 'date' => $date, 'length' => $lenght];
+	$post = ['crypt' => $crypt,
+		 'email' => $e,
+		 'country' => $c,
+		 'state' => $s,
+		 'common_name' => $cn,
+		 'organization' => $o,
+		 'organizational_unit' => $ou,
+		 'locality' => $l,
+		 'CA_key' => $CAkey,
+		 'CA_key' => $CAcert,
+		 'date' => $date,
+		 'length' => $length];
 	if(strlen($c) <= 2){
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL,"https://catboom-dns.ml/api/cert-signing/v1/");

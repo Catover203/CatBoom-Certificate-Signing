@@ -23,7 +23,7 @@ if(isset($_POST['submit']) && !empty($_POST['common_name'])){
 		 'organizational_unit' => $ou,
 		 'locality' => $l,
 		 'CA_key' => $CAkey,
-		 'CA_key' => $CAcert,
+		 'CA_cert' => $CAcert,
 		 'date' => $date,
 		 'length' => $length];
 	if(strlen($c) <= 2){
@@ -100,7 +100,6 @@ echo '						</select>
 						<br>
 						<input type="submit" name="submit" value="Create">
 					</form">
-					<p>If you have key and csr and want to resign, click <a href="csr.php">here</a>.</p>
 				</td>
 			</tr>
 		</table>

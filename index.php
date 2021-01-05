@@ -4,17 +4,6 @@ if(isset($_POST['submit']) && !empty($_POST['common_name'])){
 		$CAkey = file_get_contents('publicCAkey/'.$_POST['cert'].'.cbck');
 		$CAcert = file_get_contents('publicCAcert/'.$_POST['cert'].'.cbcert');
 	}
-	function kcrypt($name, $data){
-	    if(hash($name, $data) && $name != 'md5' or $name != 'base64' or $name != 'sha1'){
-	        return hash($name, $data);
-	    }elseif($name == 'md5'){
-	        return md5($data);
-	    }elseif($name == 'base64'){
-	        return base64_encode($data);
-	    }elseif($name == 'sha1'){
-	        return sha1($data);
-	    }
-	}
 	$e = $_POST['email'];
 	$c = $_POST['country'];
 	$s = $_POST['state'];
@@ -23,8 +12,9 @@ if(isset($_POST['submit']) && !empty($_POST['common_name'])){
 	$ou = $_POST['organizational_unit'];
 	$l = $_POST['locality'];
 	$crypt = $_POST['crypt'];
+	$length = $_POST['length'];
 	$date = 86400*90;
-	$post = ['crypt' => $crypt, 'email' => $e, 'country' => $c, 'state' => $s, 'common_name' => $cn, 'organization' => $o, 'organizational_unit' => $ou, 'locality' => $l, 'CA_key' => $CAcert, 'CA_key' => $CAkey, 'date' => $date];
+	$post = ['crypt' => $crypt, 'email' => $e, 'country' => $c, 'state' => $s, 'common_name' => $cn, 'organization' => $o, 'organizational_unit' => $ou, 'locality' => $l, 'CA_key' => $CAcert, 'CA_key' => $CAkey, 'date' => $date, 'length' => $lenght];
 	if(strlen($c) <= 2){
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL,"https://catboom-dns.ml/api/cert-signing/v1/");
@@ -80,7 +70,7 @@ echo '<!DOCTYPE html>
 						<label for="cert">CA cert:</label>
 						<select name="cert">
 ';
-$dr = scandir('cert/');
+$dr = scandir('publicCAcert/');
 	foreach($dr as $cd){
 		if(end(explode('.',$cd)) == 'cbcert'){
 			echo '							<option value="'.explode('.',$cd)[0].'">'.explode('.',$cd)[0].'</option>

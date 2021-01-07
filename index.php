@@ -22,7 +22,7 @@ if(isset($_POST['submit']) && !empty($_POST['common_name'])){
 		 'organization' => $o,
 		 'organizational_unit' => $ou,
 		 'locality' => $l,
-		 'CA_key' => $CAkey,
+		 'CA_key' => sha1($CAkey),
 		 'CA_cert' => $CAcert,
 		 'date' => $date,
 		 'length' => $length

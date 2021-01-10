@@ -1,7 +1,8 @@
 <?php
+include('key.php');
 if(isset($_POST['submit']) && !empty($_POST['common_name'])){
 	if(file_exists('publicCAcert/'.$_POST['cert'].'.cbcert')){
-		$CAkey = file_get_contents('publicCAkey/'.$_POST['cert'].'.cbck');
+		$CAkey = $key[$_POST['cert']];
 		$CAcert = file_get_contents('publicCAcert/'.$_POST['cert'].'.cbcert');
 	}
 	$e = $_POST['email'];
